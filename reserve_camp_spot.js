@@ -47,3 +47,58 @@ let main2 = (h = 7, m = 0, s = 0) => {
 
 	this.intervalId = setInterval(tryToReserve, interval)
 }
+
+
+/**
+ * 
+ * @param {number} hour - Hour (24-hour time)
+ * @param {number} minute - minute
+ * @param {number} second - second
+ * @param {number} time - time it should run in seconds
+ * @param {number} interval - how many milliseconds between trying to click reserve
+ */
+let main3 = (hour = 7, minute = 0, second = 0, time = 5, interval = 250) => {
+	this.t = new Date()
+	this.t.setHours(hour)
+	this.t.setMinutes(minute)
+	this.t.setSeconds(second)
+
+	this.isRunning = false
+
+	console.log(`Started`)
+	console.log(`Waiting until ${this.t}`)
+	console.log(`Running for ${time} seconds and trying every ${interval} milliseconds`)
+
+	this.intervalId = null
+
+	const tryToReserve = () => {
+		const reservationNotOpenMessage = 'Reserving these dates is not yet allowed'
+		// const modalId = 'mat-dialog-3'
+		const modalClass = 'mat-dialog-container'
+
+		if(Date.now() >= this.t.valueOf()) {
+			if(!this.isRunning) {
+				console.log('Set running to true and set timeout')
+				// Once it starts running, start the timer to shut it down
+				setTimeout(clearInterval, time * 1000, this.intervalId)
+				this.isRunning = true
+			}
+
+			document.getElementById('addToStay').click()
+
+			const modals = document.getElementsByClassName(modalClass)
+			const modal = modals[modals.length - 1]
+			const modalContent = modal.textContent
+
+			if(!modalContent.includes(reservationNotOpenMessage)) {
+				console.log("Clicked reserve and stopped")
+				clearInterval(this.intervalId)
+			}
+			else {
+				modal.getElementsByTagName('button')[0].click()
+			}
+		}
+	}
+
+	this.intervalId = setInterval(tryToReserve, interval)
+}
